@@ -46,19 +46,18 @@ SPOTS_FILE = "scrumping_spots.json"
 
 SYMBOL_OPTIONS = [
     {"label": "Apple", "value": "apple", "icon": "https://cdn-icons-png.flaticon.com/512/415/415733.png"},
-    {"label": "Pear", "value": "pear", "icon": "https://cdn-icons-png.flaticon.com/512/415/415770.png"},
-    {"label": "Plum", "value": "plum", "icon": "https://cdn-icons-png.flaticon.com/512/415/415771.png"},
-    {"label": "Cherry", "value": "cherry", "icon": "https://cdn-icons-png.flaticon.com/512/415/415732.png"},
-    {"label": "Walnut", "value": "walnut", "icon": "https://cdn-icons-png.flaticon.com/512/415/415809.png"},
-    {"label": "Persimmon", "value": "persimmon", "icon": "https://cdn-icons-png.flaticon.com/512/7695/7695737.png"},
-    {"label": "Blackberry", "value": "blackberry", "icon": "https://cdn-icons-png.flaticon.com/512/590/590685.png"},
-    {"label": "Mulberry", "value": "mulberry", "icon": "https://cdn-icons-png.flaticon.com/512/1044/1044517.png"},
-    {"label": "Strawberry", "value": "strawberry", "icon": "https://cdn-icons-png.flaticon.com/512/590/590687.png"},
-    {"label": "Raspberry", "value": "raspberry", "icon": "https://cdn-icons-png.flaticon.com/512/590/590690.png"},
-    {"label": "Serviceberry", "value": "serviceberry", "icon": "https://cdn-icons-png.flaticon.com/512/415/415734.png"},
-    {"label": "Fig", "value": "fig", "icon": "https://cdn-icons-png.flaticon.com/512/1044/1044512.png"},
-    {"label": "Flower", "value": "flower", "icon": "https://cdn-icons-png.flaticon.com/512/616/616494.png"},
-    {"label": "Question", "value": "question", "icon": "https://cdn-icons-png.flaticon.com/512/1828/1828970.png"},
+    {"label": "Pear", "value": "pear", "icon": "https://cdn-icons-png.flaticon.com/128/415/415716.png"},
+    {"label": "Plum", "value": "plum", "icon": "https://cdn-icons-png.flaticon.com/128/4057/4057267.png"},
+    {"label": "Cherry", "value": "cherry", "icon": "https://cdn-icons-png.flaticon.com/128/1791/1791306.png"},
+    {"label": "Nut", "value": "nut", "icon": "https://cdn-icons-png.flaticon.com/128/7451/7451659.png"},
+    {"label": "Persimmon", "value": "persimmon", "icon": "https://cdn-icons-png.flaticon.com/128/12404/12404784.png"},
+    {"label": "Blackberry", "value": "blackberry", "icon": "https://cdn-icons-png.flaticon.com/128/4332/4332794.png"},
+    {"label": "Mulberry", "value": "mulberry", "icon": "https://cdn-icons-png.flaticon.com/128/13449/13449659.png"},
+    {"label": "Strawberry", "value": "strawberry", "icon": "https://cdn-icons-png.flaticon.com/128/9421/9421253.png"},
+    {"label": "Raspberry", "value": "raspberry", "icon": "https://cdn-icons-png.flaticon.com/128/1542/1542487.png"},
+    {"label": "Fig", "value": "fig", "icon": "https://cdn-icons-png.flaticon.com/128/6192/6192458.png"},
+    {"label": "Flower", "value": "flower", "icon": "https://cdn-icons-png.flaticon.com/128/11504/11504574.png"},
+    {"label": "Other", "value": "other", "icon": "https://cdn-icons-png.flaticon.com/128/5726/5726678.png"},
 ]
 
 STAR_ICON = "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
