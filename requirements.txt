@@ -1,0 +1,6 @@
+flask==3.0.3 
+json
+os
+datetime
+folium
+gunicorn
