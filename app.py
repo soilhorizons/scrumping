@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template_string
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import SQLAlchemy
 import os
 from datetime import datetime
 
