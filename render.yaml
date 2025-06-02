@@ -5,7 +5,7 @@ services:
     plan: free
     buildCommand: |
       pip install -r requirements.txt
-      python init_db.py  # <-- this line runs your DB init script after installing requirements
+      python init_db.py        # <--- Add this line temporarily!
     startCommand: gunicorn app:app
     envVars:
       - key: FLASK_ENV

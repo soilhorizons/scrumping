@@ -426,8 +426,13 @@ def map_view():
     </script>
     </body>
     </html>
-    """, spots=[dict(spot, spot_id=i) for i, spot in enumerate(spots)],
-    start_lat=start_lat, start_lon=start_lon, symbol_options=SYMBOL_OPTIONS, star_icon=STAR_ICON)
+    """,
+        spots=[{**spot.to_dict(), "spot_id": i} for i, spot in enumerate(spots)],
+        start_lat=start_lat,
+        start_lon=start_lon,
+        symbol_options=SYMBOL_OPTIONS,
+        star_icon=STAR_ICON
+    )
 
 
 @app.route("/api/spots", methods=["GET"])
