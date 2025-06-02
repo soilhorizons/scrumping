@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Scrumping Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ folium_css | safe }}
+    {{ folium_js | safe }}
+    <style>
+        html, body, #map {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <!-- The map will be rendered here -->
+    {{ super() }}
+</body>
+</html>
