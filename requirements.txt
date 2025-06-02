@@ -2,3 +2,5 @@ flask==3.0.3
 datetime
 folium
 gunicorn
+psycopg2-binary
+sqlalchemy

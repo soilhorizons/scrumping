@@ -1,9 +1,46 @@
-from flask import Flask, render_template_string, request, jsonify
-import json
+from flask import Flask, request, jsonify, render_template_string
+from flask_sqlalchemy import SQLAlchemy
 import os
 from datetime import datetime
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+class Spot(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    lat = db.Column(db.Float, nullable=False)
+    lon = db.Column(db.Float, nullable=False)
+    type_of_fruit = db.Column(db.String(100), nullable=False)
+    symbol = db.Column(db.String(50), nullable=False)
+    scrumping_month = db.Column(db.Integer, nullable=False)
+    your_name = db.Column(db.String(100), nullable=False)
+    notes = db.Column(db.Text)
+    date_added = db.Column(db.String(20), default=lambda: datetime.now().strftime('%Y-%m-%d'))
+
+# To create the tables (do this once, e.g. from a shell):
+# >>> from app import db
+# >>> db.create_all()
+
+@app.route("/add_spot", methods=["POST"])
+def add_spot():
+    data = request.get_json()
+    spot = Spot(
+        lat=data["lat"],
+        lon=data["lon"],
+        type_of_fruit=data["type_of_fruit"],
+        symbol=data["symbol"],
+        scrumping_month=int(data["scrumping_month"]),
+        your_name=data["your_name"],
+        notes=data.get("notes", "")
+    )
+    db.session.add(spot)
+    db.session.commit()
+    return jsonify({"success": True})
+
+spots = Spot.query.order_by(Spot.id).all()
+
 
 SPOTS_FILE = "scrumping_spots.json"
 
