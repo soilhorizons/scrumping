@@ -5,7 +5,6 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
@@ -44,27 +43,6 @@ class Spot(db.Model):
             "date_added": self.date_added
         }
 
-@app.route("/add_spot", methods=["POST"])
-def add_spot():
-    data = request.get_json()
-    spot = Spot(
-        lat=data["lat"],
-        lon=data["lon"],
-        type_of_fruit=data["type_of_fruit"],
-        symbol=data["symbol"],
-        scrumping_month=int(data["scrumping_month"]),
-        your_name=data["your_name"],
-        notes=data.get("notes", "")
-    )
-    db.session.add(spot)
-    db.session.commit()
-    return jsonify({"success": True})
-
-spots = Spot.query.order_by(Spot.id).all()
-
-
-SPOTS_FILE = "scrumping_spots.json"
-
 SYMBOL_OPTIONS = [
     {"label": "Apple", "value": "apple", "icon": "https://cdn-icons-png.flaticon.com/512/415/415733.png"},
     {"label": "Pear", "value": "pear", "icon": "https://cdn-icons-png.flaticon.com/128/415/415716.png"},
@@ -83,28 +61,19 @@ SYMBOL_OPTIONS = [
 
 STAR_ICON = "https://cdn-icons-png.flaticon.com/512/1828/1828884.png"
 
-def load_spots():
-    if os.path.exists(SPOTS_FILE):
-        with open(SPOTS_FILE, "r") as f:
-            return json.load(f)
-    return []
-
-def save_spots(spots):
-    with open(SPOTS_FILE, "w") as f:
-        json.dump(spots, f)
-
 @app.route("/")
 def index():
     return "<h2>Go to <a href='/map'>/map</a> to see the map.</h2>"
 
 @app.route("/map")
-def map():
-    spots = load_spots()
+def map_view():
+    spots = Spot.query.order_by(Spot.id).all()
     start_lat, start_lon = (32.5007, -110.1246)
     if spots:
         last_spot = spots[-1]
-        start_lat, start_lon = last_spot['lat'], last_spot['lon']
-    return render_template_string("""
+        start_lat, start_lon = last_spot.lat, last_spot.lon
+    return render_template_string(
+        """
     <!DOCTYPE html>
     <html>
     <head>
@@ -457,10 +426,8 @@ def map():
     </script>
     </body>
     </html>
-    """, spots=[
-        dict(spot, spot_id=i) for i, spot in enumerate(spots)
-    ], start_lat=start_lat, start_lon=start_lon, symbol_options=SYMBOL_OPTIONS, star_icon=STAR_ICON)
-
+    """, spots=[dict(spot, spot_id=i) for i, spot in enumerate(spots)],
+    start_lat=start_lat, start_lon=start_lon, symbol_options=SYMBOL_OPTIONS, star_icon=STAR_ICON)
 
 
 @app.route("/api/spots", methods=["GET"])
@@ -468,27 +435,23 @@ def get_spots():
     spots = Spot.query.order_by(Spot.id).all()
     return jsonify([spot.to_dict() for spot in spots])
 
-
 @app.route("/add_spot", methods=["POST"])
 def add_spot():
     data = request.get_json()
     required = ["lat", "lon", "type_of_fruit", "symbol", "scrumping_month", "your_name"]
     if not data or not all(k in data for k in required):
         return jsonify({"error": "Invalid data"}), 400
-    spots = load_spots()
-    now = datetime.now().strftime('%Y-%m-%d')
-    new_spot = {
-        "lat": data["lat"],
-        "lon": data["lon"],
-        "type_of_fruit": data["type_of_fruit"],
-        "symbol": data["symbol"],
-        "scrumping_month": int(data["scrumping_month"]),
-        "your_name": data["your_name"],
-        "notes": data.get("notes", ""),
-        "date_added": now
-    }
-    spots.append(new_spot)
-    save_spots(spots)
+    spot = Spot(
+        lat=data["lat"],
+        lon=data["lon"],
+        type_of_fruit=data["type_of_fruit"],
+        symbol=data["symbol"],
+        scrumping_month=int(data["scrumping_month"]),
+        your_name=data["your_name"],
+        notes=data.get("notes", "")
+    )
+    db.session.add(spot)
+    db.session.commit()
     return jsonify({"success": True})
 
 @app.route("/edit_spot", methods=["POST"])
@@ -496,19 +459,17 @@ def edit_spot():
     data = request.get_json()
     if "spot_id" not in data:
         return jsonify({"error": "No spot id"}), 400
-    spots = load_spots()
-    idx = int(data["spot_id"])
-    if idx < 0 or idx >= len(spots):
+    spot = Spot.query.get(int(data["spot_id"]))
+    if not spot:
         return jsonify({"error": "Invalid spot id"}), 400
-    # update fields
-    spots[idx]["lat"] = data["lat"]
-    spots[idx]["lon"] = data["lon"]
-    spots[idx]["type_of_fruit"] = data["type_of_fruit"]
-    spots[idx]["symbol"] = data["symbol"]
-    spots[idx]["scrumping_month"] = int(data["scrumping_month"])
-    spots[idx]["your_name"] = data["your_name"]
-    spots[idx]["notes"] = data.get("notes", "")
-    save_spots(spots)
+    spot.lat = data["lat"]
+    spot.lon = data["lon"]
+    spot.type_of_fruit = data["type_of_fruit"]
+    spot.symbol = data["symbol"]
+    spot.scrumping_month = int(data["scrumping_month"])
+    spot.your_name = data["your_name"]
+    spot.notes = data.get("notes", "")
+    db.session.commit()
     return jsonify({"success": True})
 
 @app.route("/delete_spot", methods=["POST"])
@@ -516,24 +477,12 @@ def delete_spot():
     data = request.get_json()
     if "spot_id" not in data:
         return jsonify({"error": "No spot id"}), 400
-    spots = load_spots()
-    idx = int(data["spot_id"])
-    if idx < 0 or idx >= len(spots):
+    spot = Spot.query.get(int(data["spot_id"]))
+    if not spot:
         return jsonify({"error": "Invalid spot id"}), 400
-    spots.pop(idx)
-    save_spots(spots)
+    db.session.delete(spot)
+    db.session.commit()
     return jsonify({"success": True})
-    
-# Optional: route to delete a spot by id
-@app.route("/delete_spot/<int:spot_id>", methods=["DELETE"])
-def delete_spot(spot_id):
-    spot = Spot.query.get(spot_id)
-    if spot:
-        db.session.delete(spot)
-        db.session.commit()
-        return jsonify({"success": True})
-    else:
-        return jsonify({"success": False, "error": "Spot not found"}), 404
-    
+
 if __name__ == "__main__":
     app.run(debug=True)
