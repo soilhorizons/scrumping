@@ -5,6 +5,12 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+    app.run()
+
 # Fix for postgres:// vs postgresql://
 database_url = os.environ.get('DATABASE_URL')
 if database_url and database_url.startswith("postgres://"):
@@ -37,10 +43,6 @@ class Spot(db.Model):
             "notes": self.notes,
             "date_added": self.date_added
         }
-
-# To create the tables (do this once, e.g. from a shell):
-# >>> from app import db
-# >>> db.create_all()
 
 @app.route("/add_spot", methods=["POST"])
 def add_spot():
