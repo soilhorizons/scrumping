@@ -4,9 +4,39 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+
+# Fix for postgres:// vs postgresql://
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db = SQLAlchemy(app)
+
+class Spot(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    lat = db.Column(db.Float, nullable=False)
+    lon = db.Column(db.Float, nullable=False)
+    type_of_fruit = db.Column(db.String(100), nullable=False)
+    symbol = db.Column(db.String(50), nullable=False)
+    scrumping_month = db.Column(db.Integer, nullable=False)
+    your_name = db.Column(db.String(100), nullable=False)
+    notes = db.Column(db.Text)
+    date_added = db.Column(db.String(20), default=lambda: datetime.now().strftime('%Y-%m-%d'))
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "lat": self.lat,
+            "lon": self.lon,
+            "type_of_fruit": self.type_of_fruit,
+            "symbol": self.symbol,
+            "scrumping_month": self.scrumping_month,
+            "your_name": self.your_name,
+            "notes": self.notes,
+            "date_added": self.date_added
+        }
 
 class Spot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -440,6 +470,14 @@ def map():
         dict(spot, spot_id=i) for i, spot in enumerate(spots)
     ], start_lat=start_lat, start_lon=start_lon, symbol_options=SYMBOL_OPTIONS, star_icon=STAR_ICON)
 
+
+
+@app.route("/api/spots", methods=["GET"])
+def get_spots():
+    spots = Spot.query.order_by(Spot.id).all()
+    return jsonify([spot.to_dict() for spot in spots])
+
+
 @app.route("/add_spot", methods=["POST"])
 def add_spot():
     data = request.get_json()
@@ -494,6 +532,17 @@ def delete_spot():
     spots.pop(idx)
     save_spots(spots)
     return jsonify({"success": True})
-
+    
+# Optional: route to delete a spot by id
+@app.route("/delete_spot/<int:spot_id>", methods=["DELETE"])
+def delete_spot(spot_id):
+    spot = Spot.query.get(spot_id)
+    if spot:
+        db.session.delete(spot)
+        db.session.commit()
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": "Spot not found"}), 404
+    
 if __name__ == "__main__":
     app.run(debug=True)
