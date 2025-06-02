@@ -38,17 +38,6 @@ class Spot(db.Model):
             "date_added": self.date_added
         }
 
-class Spot(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    lat = db.Column(db.Float, nullable=False)
-    lon = db.Column(db.Float, nullable=False)
-    type_of_fruit = db.Column(db.String(100), nullable=False)
-    symbol = db.Column(db.String(50), nullable=False)
-    scrumping_month = db.Column(db.Integer, nullable=False)
-    your_name = db.Column(db.String(100), nullable=False)
-    notes = db.Column(db.Text)
-    date_added = db.Column(db.String(20), default=lambda: datetime.now().strftime('%Y-%m-%d'))
-
 # To create the tables (do this once, e.g. from a shell):
 # >>> from app import db
 # >>> db.create_all()
